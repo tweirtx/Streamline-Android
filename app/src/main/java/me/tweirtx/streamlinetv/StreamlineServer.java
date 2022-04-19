@@ -28,13 +28,13 @@ public class StreamlineServer implements Runnable {
 
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            //String responseData = new String(exchange.getRequestBody().readAllBytes());
-            //targetURL = responseData.substring(responseData.indexOf("http"), responseData.lastIndexOf('"'));
-            targetURL = "https://web.tweirtx.me";
+            byte[] responseBytes = new byte[exchange.getRequestBody().available()];
+            exchange.getRequestBody().read(responseBytes);
+            String responseData = new String(responseBytes);
+            targetURL = responseData.substring(responseData.indexOf("http"), responseData.lastIndexOf('"'));
             exchange.sendResponseHeaders(200, 0);
             exchange.close();
-            System.out.println(exchange.getRequestBody().read());
-
+            System.out.println(targetURL);
         }
     }
 
