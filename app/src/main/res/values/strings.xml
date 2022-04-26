@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">StreamlineTV</string>
     <string name="browse_title">Awaiting Streamline Control</string>
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <!-- Error messages -->
 </resources>

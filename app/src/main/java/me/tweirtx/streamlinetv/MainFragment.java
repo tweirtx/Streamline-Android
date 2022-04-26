@@ -1,19 +1,15 @@
 package me.tweirtx.streamlinetv;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.webkit.WebView;
 import androidx.core.content.ContextCompat;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseSupportFragment;
-import androidx.leanback.widget.*;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -23,7 +19,6 @@ public class MainFragment extends BrowseSupportFragment {
     private static final String TAG = "MainFragment";
 
     private static final int BACKGROUND_UPDATE_DELAY = 300;
-
 
     private final Handler mHandler = new Handler();
     private Drawable mDefaultBackground;
@@ -43,7 +38,6 @@ public class MainFragment extends BrowseSupportFragment {
             e.printStackTrace();
         }
         super.onActivityCreated(savedInstanceState);
-
         prepareBackgroundManager();
 
         setupUIElements();
@@ -68,6 +62,7 @@ public class MainFragment extends BrowseSupportFragment {
         mDefaultBackground = ContextCompat.getDrawable(getActivity(), R.drawable.default_background);
         mMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+
     }
 
     private void setupUIElements() {
@@ -80,6 +75,7 @@ public class MainFragment extends BrowseSupportFragment {
 
         // set fastLane (or headers) background color
         setBrandColor(ContextCompat.getColor(getActivity(), R.color.fastlane_background));
+
         // set search icon color
 
     }
@@ -92,20 +88,36 @@ public class MainFragment extends BrowseSupportFragment {
         mBackgroundTimer.schedule(new UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
     }
 
-    private class UpdateBackgroundTask extends TimerTask {
-
+    class UpdateBackgroundTask extends TimerTask {
+        String currentURL;
         @Override
         public void run() {
             System.out.println("Running");
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                  //  updateBackground(mBackgroundUri);
+            mHandler.post(() -> {
+              //  updateBackground(mBackgroundUri);
+                currentURL = "";
+                while (true) {
                     if (server.getTargetURL() != null) {
                         // navigate there
-                        System.out.println("AAAAAAAAAAA " + server.getTargetURL());
+                        if (!server.getTargetURL().equals(currentURL)) {
+                            System.out.println("getTargetURL does not equal currentURL");
+                            currentURL = server.getTargetURL();
+                            try {
+                                getActivity().startActivity(new Intent(getContext(), FullscreenActivity.class).putExtra("URL", currentURL));
+                                //myWebView.loadUrl(currentURL);
+                            }
+                            catch (NullPointerException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }
+
             });
         }
     }
